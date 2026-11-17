@@ -13,7 +13,7 @@ To install these tools mentioned [here](#building-from-source), run this in your
 
 ```
 sudo apt update  
-sudo apt install nasm gcc ld
+sudo apt install nasm gcc binutils
 ```
 
 This will install these tools that are neccesary for building the **Asterisk kernel**.
