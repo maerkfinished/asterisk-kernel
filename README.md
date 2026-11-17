@@ -5,4 +5,9 @@ The Asterisk kernel, boots using legacy boot (for now no UEFI support). This is 
 # Building from source
 
 To build from source, you will need the following utilities:  
-**NASM (for assembly)**, **GCC (for all the C code)** and **LD (for linking the object files)**.
+**NASM (for assembly)**, **GCC (for all the C code)** and **LD (for linking the object files)**.  
+
+## Installing these tools on Ubuntu:
+To install these tools mentioned [here](#Building%20from%20source), run this in your terminal:  
+`sudo apt update`  
+`sudo apt install nasm gcc ld`
