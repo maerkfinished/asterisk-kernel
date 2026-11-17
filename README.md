@@ -46,11 +46,11 @@ sudo apt-get install build-essential
 brew install i686-elf-grub i686-elf-gcc
 ```
 
-Now, to install these tools mentioned [here](#building-from-source), run this in your terminal:  
+Now, to install these tools mentioned [here](#building-from-source "some of them"), run this in your terminal:  
 
 ```
 sudo apt update  
-sudo apt install nasm gcc binutils
+sudo apt install nasm binutils
 ```
 
 This will install these tools that are necesary for building the **Asterisk kernel**.
