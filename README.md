@@ -5,12 +5,31 @@ The Asterisk kernel, boots using legacy boot (for now no UEFI support). This is 
 # Building from source
 
 To build from source, you will need the following utilities:  
-**NASM (for assembly)**, **GCC (for all the C code)** and **LD (for linking the object files)**.  
+**NASM (for assembly)**, **GCC (for all the C code)**, **LD (for linking the object files)** and **QEMU (for running the kernel, this is something like VirtualBox, but you can run this in the terminal)**.
 
 ## Installing these tools on Ubuntu:
+
 To install these tools mentioned [here](#Building%20from%20source), run this in your terminal:  
 
-```bash
-sudo apt update  
-sudo apt install something
 ```
+sudo apt update  
+sudo apt install nasm gcc ld
+```
+
+This will install these tools that are neccesary for building the **Asterisk kernel**.
+
+## Cloning [this](https://github.com/maerkfinished/asterisk-kernel/) Github repo & building the kernel:
+
+Here are the commands you will run in your terminal:
+
+```
+git clone https://github.com/maerkfinished/asterisk-kernel/
+cd asterisk-kernel
+make
+```
+
+If you have done everything correctly, these commands will run **suscesfully** and you will run the kernel **automatically** in a virtual machine.
+
+
+### One last thing:
+I am sorry if this README file is bad or my english is bad here, this is my first readme file that I have made and it may look *wonky* to you.
