@@ -5,7 +5,7 @@ The Asterisk kernel, boots using legacy boot (for now no UEFI support). This is 
 # Building from source
 
 To build from source, you will need the following utilities:  
-**NASM (for assembly)**, **GCC (for all the C code)**, **LD (for linking the object files)** and **QEMU (for running the kernel, this is something like VirtualBox, but you can run this in the terminal)**.
+**NASM** (for assembly), **i686-ELF-GRUB**, **i686-ELF-GCC** (for all the C code) and **QEMU** (for running the kernel, this is something like VirtualBox, but you can run this in the terminal).
 
 ## Important thing before building (on Linux):
 
