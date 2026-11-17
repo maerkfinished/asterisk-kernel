@@ -21,25 +21,39 @@ I don't have a tutorial for the **first option**, since I couldn't get that work
 
 To first install Homebrew, run this command:
 
-`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
-*If it says that curl is not installed or something simmilar, please install **curl** with the following command:*
+*If it says that curl is not installed or something similar, please install **curl** with the following command:*
 
-`sudo apt install curl`
+```
+sudo apt install curl
+```
 
 Then, it will tell you to also run some commands to add Homebrew to your system's **PATH**.  
-Here are the commands for the PATH:  
+Here are the commands for the PATH (and some other commands that Homebrew needs us to run):  
 
+```
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
+sudo apt-get install build-essential
+```
 
+**Finally**, you can now run:
 
-To install these tools mentioned [here](#building-from-source), run this in your terminal:  
+```
+brew install i686-elf-grub i686-elf-gcc
+```
+
+Now, to install these tools mentioned [here](#building-from-source), run this in your terminal:  
 
 ```
 sudo apt update  
 sudo apt install nasm gcc binutils
 ```
 
-This will install these tools that are neccesary for building the **Asterisk kernel**.
+This will install these tools that are necesary for building the **Asterisk kernel**.
 
 ## Cloning [this](https://github.com/maerkfinished/asterisk-kernel/) Github repo & building the kernel:
 
@@ -52,8 +66,8 @@ mkdir build
 make
 ```
 
-If you have done everything correctly, these commands will run **suscesfully** and you will run the kernel **automatically** in a virtual machine.
+If you have done everything correctly, these commands will run **successfully** and you will run the kernel **automatically** in a virtual machine.
 
 
 ### One last thing:
-I am sorry if this README file is bad or my english is bad here, this is my first readme file that I have made and it may look *wonky* to you.
+I am sorry if this README file is bad or my English is bad here, this is my first readme file that I have made and it may look *wonky* to you.
