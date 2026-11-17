@@ -9,5 +9,8 @@ To build from source, you will need the following utilities:
 
 ## Installing these tools on Ubuntu:
 To install these tools mentioned [here](#Building%20from%20source), run this in your terminal:  
-`sudo apt update`  
-`sudo apt install nasm gcc ld`
+
+```bash
+sudo apt update  
+sudo apt install something
+```
