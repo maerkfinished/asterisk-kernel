@@ -25,6 +25,7 @@ Here are the commands you will run in your terminal:
 ```
 git clone https://github.com/maerkfinished/asterisk-kernel/
 cd asterisk-kernel
+mkdir build
 make
 ```
 
