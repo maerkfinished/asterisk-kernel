@@ -1,3 +1,5 @@
+-include make.config
+
 CC   = i686-elf-gcc
 LD   = i686-elf-ld
 ASM  = nasm
@@ -33,7 +35,9 @@ all: $(asm_destination) $(special_dest) $(cfiles_dest) $(special_final) run
 run:
 	cat $(asm_destination) src/kernel/kernel.exec > $(os_dest)
 	dd if=/dev/null of=$(os_dest) bs=1 count=0 seek=1474560
+ifeq ($(USE_COMPAT),n)
 	$(QEMU) -drive file=$(os_dest),format=raw,if=floppy,index=0 -monitor stdio
+endif
 clean:
 	rm -rf src/boot/*.bin
 	rm -rf src/kernel/kernel.exec
