@@ -35,8 +35,9 @@ Then, it will tell you to also run some commands to add Homebrew to your system'
 Here are the commands for the PATH (and some other commands that Homebrew needs us to run):  
 
 ```
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
+echo >> /home/marco/.bashrc
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"' >> /home/marco/.bashrc
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 sudo apt-get install build-essential
 ```
 
