@@ -1,11 +1,12 @@
 #include "driver.h"
 #include "ps2kbd.h"
+#include "vga.h"
 #include "../kernel/libraries/hwreg.h"
 #include "../kernel/libraries/string.h"
 
 driver_t PS2_KEYBD_DRIVER = {
     .name    = "PS/2 Keyboard Driver",
-    .version = "0.2",
+    .version = "0.3 ALPHA",
     .init    = ps2_keyboard_init
 };
 
@@ -25,6 +26,9 @@ static dict_hex hex_to_char = {
     {0x0000002C, 'z'}, {0x0000002D, 'x'}, {0x0000002E, 'c'}, {0x0000002F, 'v'}, {0x00000030, 'b'},
     {0x00000031, 'n'}, {0x00000032, 'm'}, {0x00000033, ','}, {0x00000034, '.'}, {0x000000035, '/'}, {0x00000037, '*'},
     {0x00000039, ' '}, {0x0000004E, '+'}, {0x0000004A, '-'},
+
+    // Arrow keys
+    {0x0000004B, '\1'}, {0x00000048, '\2'}, {0x00000050, '\3'}, {0x0000004D, '\4'}
 };
 
 
@@ -39,14 +43,19 @@ int get_dict_len(dict_hex dict) {
 static char get_char_from_dict(uint32_t hex, dict_hex dict) {
     int i = 0;
     int dict_len = get_dict_len(dict);
-    while ((dict[i].key != (uint32_t) hex) && i < dict_len) {
+    while (((uint32_t) dict[i].key != hex) && i < dict_len) {
         i++;
     }
     return dict[i].val;
 }
 
+static inline void kbd_cooldown() {
+    while (inb(REG_KBD_STAT) & 0x02);
+}
+
 
 bool SHIFT_PRESSED       = false;
+bool CAPS_LOCK           = false;
 bool OTHER_SHIFT_PRESSED = false;
 char kbd_getchar() {
     while (1) {
@@ -61,6 +70,12 @@ char kbd_getchar() {
                 } else {
                     OTHER_SHIFT_PRESSED = true;
                 }
+            } else if (scancode == 0x0000003A) {
+                kbd_cooldown();
+                outb(REG_KBD_DATA, 0xED);
+                kbd_cooldown();
+                outb(REG_KBD_DATA, CAPS_LOCK ? 0x00 : 0x04);
+                CAPS_LOCK = !CAPS_LOCK;
             }
 
             if (scancode & 0x80) {
@@ -75,8 +90,9 @@ char kbd_getchar() {
             }
 
             char c = get_char_from_dict(scancode, hex_to_char);
+            //printhex(scancode, 0);
             if (c) {
-                if (SHIFT_PRESSED && !iscntrl(c)) {
+                if ((SHIFT_PRESSED || CAPS_LOCK) && !iscntrl(c)) {
                     c = upper(c);
                 }
                 return c;

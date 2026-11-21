@@ -1,7 +1,8 @@
 #include "string.h"
 
-string upper_lower_chars   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-string upper_lower_symbols = "`1234567890-=[];'\\,./§~!@#$%^&*()_+{}:\"|<>?±";
+const string upper_lower_chars   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const string upper_lower_symbols = "`1234567890-=[];'\\,./§~!@#$%^&*()_+{}:\"|<>?±";
+const string hex_chars = "0123456789ABCDEF";
 
 
 int strlen(string str) {
@@ -12,6 +13,17 @@ int strlen(string str) {
     }
 
     return i - 1;
+}
+
+string hextostr(uint8_t hex) {
+    string str = "0x00000000";
+
+    for (int i = 9; i >= 2; i--) {
+        str[i] = hex_chars[hex & 0xF];
+        hex >>= 4;
+    }
+
+    return str;
 }
 
 int intlen(int num) {

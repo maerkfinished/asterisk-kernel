@@ -10,9 +10,9 @@ LDFLAGS = -T src/linker.ld
 
 asm_compile     = src/boot/unlock.asm src/boot/boot.asm
 asm_destination = src/boot/unlock.bin src/boot/boot.bin
-compile_special = src/kernel/kernel.c src/kernel/misc_entry.asm
-special_dest    = src/kernel/kernel.o src/kernel/misc_entry.o
-special_final   = src/kernel/kernel.exec src/kernel/misc_entry.o
+compile_special = src/kernel/kernel.c src/kernel/entry.asm
+special_dest    = src/kernel/kernel.o src/kernel/entry.o
+special_final   = src/kernel/kernel.exec src/kernel/entry.o
 
 cfiles_compile  = src/kernel/libraries/string.c src/kernel/libraries/math.c src/kernel/libraries/hwreg.c src/drivers/vga.c src/drivers/ps2kbd.c src/init/init.c 
 cfiles_dest     = src/kernel/libraries/string.o src/kernel/libraries/math.o src/kernel/libraries/hwreg.o src/drivers/vga.o src/drivers/ps2kbd.o src/init/init.o 
@@ -29,7 +29,7 @@ all: $(asm_destination) $(special_dest) $(cfiles_dest) $(special_final) run
 %.o:   %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 %.exec: %.o
-	$(LD) $(LDFLAGS) -o $@ --oformat binary src/kernel/misc_entry.o $^ $(cfiles_dest)
+	$(LD) $(LDFLAGS) -o $@ --oformat binary src/kernel/entry.o $^ $(cfiles_dest)
 %.bin: %.o
 	$(LD) $(LDFLAGS) -o $@ --oformat binary $^
 run:

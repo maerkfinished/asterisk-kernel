@@ -3,17 +3,17 @@
 #include "../drivers/vga.h"
 #include "kernel_config.h"
 
-extern driver_t vga;
+extern driver_t VGA_DRIVER;
 
 void kernel_main() {
 
-    vga.init();
+    VGA_DRIVER.init();
 
     if (QUIET) {
             clear(0);
             configure_cursor(false);
     } else {
-        print_kernel_logo(cursor_col, cursor_row);
+        print_kernel_logo(0, cursor_y);
     }
 
     init(QUIET_INIT);

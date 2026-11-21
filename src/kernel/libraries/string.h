@@ -6,6 +6,7 @@ typedef char *string;
 
 
 int strlen(string str);
+string hextostr(uint8_t hex);
 int intlen(int num);
 string join(string str1, string str2, string newstr);
 int findinstr(string str, char c);

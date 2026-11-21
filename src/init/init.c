@@ -7,9 +7,9 @@ extern driver_t PS2_KEYBD_DRIVER;
 
 
 void print_kernel_logo(int x, int y) {
-    set_cursor(x, y);
+    update_cursor(x, y);
 
-    kputchar('\n', 0);
+    printchar('\n', 0);
     print("             *                             \n", 0);
     print("            *%*                            \n", 0);
     print("          *%#$#%*                          \n", 0);
@@ -27,9 +27,9 @@ void print_kernel_logo(int x, int y) {
 
 void print_crash(int x, int y, string crash_msg) {
     clear(0xF0);
-    set_cursor(x, y);
+    update_cursor(x, y);
 
-    kputchar('\n', 0xF0);
+    printchar('\n', 0xF0);
     print("             *                             \n", 0xF0);
     print("            *%*                            \n", 0xF0);
     print("          *%#$#%*                          \n", 0xF0);
@@ -50,7 +50,7 @@ void print_crash(int x, int y, string crash_msg) {
 bool print_status_first_time = true;
 void print_status(string str, int useOkSign) {
     if (!print_status_first_time) {
-        kputchar('\n', 0);
+        printchar('\n', 0);
     } else {
         print_status_first_time = false;
     }
@@ -80,7 +80,7 @@ void print_status(string str, int useOkSign) {
 
 void init(bool quiet_mode) {
 
-    enable_quiet = quiet_mode;
+    quiet_mode = quiet_mode;
     configure_cursor(!quiet_mode);
 
     print_status("Loading drivers..", 1);
@@ -91,7 +91,7 @@ void init(bool quiet_mode) {
 
     print("\nNow you can type here: ", 0x0A);
     while (1) {
-        kputchar(kbd_getchar(), 0);
+        printchar(kbd_getchar(), 0);
     }
 
 
