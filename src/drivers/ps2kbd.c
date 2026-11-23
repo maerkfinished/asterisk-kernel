@@ -6,7 +6,7 @@
 
 driver_t PS2_KEYBD_DRIVER = {
     .name    = "PS/2 Keyboard Driver",
-    .version = "0.3",
+    .version = "0.3.1",
     .init    = ps2_keyboard_init
 };
 
