@@ -27,6 +27,19 @@ uint16_t cursor_y = 0;
 bool quiet_mode = false;
 
 
+static void hw_update_cursor() {
+    uint16_t pos = 0;
+
+    outb(REG_CRTC_ADDR, REG_CUR_LOC_HIGH);
+    pos |= ((uint16_t) inb(REG_CRTC_DATA)) << 8;
+
+    outb(REG_CRTC_ADDR, REG_CUR_LOC_LOW);
+    pos |= inb(REG_CRTC_DATA);
+
+    cursor_x = pos % VGA_WIDTH;
+    cursor_y = pos / VGA_WIDTH;
+}
+
 static inline uint16_t vgaconvlin(uint16_t x, uint16_t y) {
     return y * VGA_WIDTH + x;
 }
@@ -178,6 +191,10 @@ void scroll(int32_t scroll_len, uint16_t color) {
         for (int32_t i = abs(shift); i > 0; i--) {
             wbufvga(i - 1, ' ', color);
         }
+    } else {
+        for (size_t i = keep; i < VGATXT_BUF.size; i++) {
+            wbufvga(i, ' ', color);
+        }
     }
 
 }
@@ -275,5 +292,5 @@ void printhex(uint32_t hex, uint16_t color) {
 
 
 void vga_init() {
-
+    hw_update_cursor();
 }
