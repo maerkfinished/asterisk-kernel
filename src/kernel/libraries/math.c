@@ -14,3 +14,9 @@ int clamp(int val, int start, int end) {
 
     return val;
 }
+int abs(int val) {
+    if (val < 0) {
+        val = 0 - val;
+    }
+    return val;
+}

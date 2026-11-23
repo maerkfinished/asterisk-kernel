@@ -14,8 +14,8 @@ compile_special = src/kernel/kernel.c src/kernel/entry.asm
 special_dest    = src/kernel/kernel.o src/kernel/entry.o
 special_final   = src/kernel/kernel.exec src/kernel/entry.o
 
-cfiles_compile  = src/kernel/libraries/string.c src/kernel/libraries/math.c src/kernel/libraries/hwreg.c src/drivers/vga.c src/drivers/ps2kbd.c src/init/init.c 
-cfiles_dest     = src/kernel/libraries/string.o src/kernel/libraries/math.o src/kernel/libraries/hwreg.o src/drivers/vga.o src/drivers/ps2kbd.o src/init/init.o 
+cfiles_compile  = src/kernel/libraries/string.c src/kernel/libraries/math.c src/kernel/libraries/stdmem.c src/kernel/libraries/hwreg.c src/drivers/vga.c src/drivers/ps2kbd.c src/init/init.c 
+cfiles_dest     = src/kernel/libraries/string.o src/kernel/libraries/math.o src/kernel/libraries/stdmem.o src/kernel/libraries/hwreg.o src/drivers/vga.o src/drivers/ps2kbd.o src/init/init.o 
 
 os_dest         = build/os.img
 

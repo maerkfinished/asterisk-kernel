@@ -1,5 +1,4 @@
 #include "init.h"
-#include "../drivers/driver.h"
 #include "../drivers/vga.h"
 #include "../drivers/ps2kbd.h"
 
@@ -48,23 +47,23 @@ void print_crash(int x, int y, string crash_msg) {
 }
 
 bool print_status_first_time = true;
-void print_status(string str, int useOkSign) {
+void print_status(string str, int sign) {
     if (!print_status_first_time) {
         printchar('\n', 0);
     } else {
         print_status_first_time = false;
     }
-    if (useOkSign == 0) {
+    if (sign == 0) {
         print("[ ", 0);
         print("OK", 0x0A);
         print(" ] ", 0);
     }
-    else if (useOkSign == 1) {
+    else if (sign == 1) {
         print("[ ", 0);
         print("INF", 0x08);
         print(" ] ", 0);
     }
-    else if (useOkSign == 2) {
+    else if (sign == 2) {
         print("[ ", 0);
         print("WARN", 0x0E);
         print(" ] ", 0);
@@ -82,14 +81,19 @@ void init(bool quiet_mode) {
 
     quiet_mode = quiet_mode;
     configure_cursor(!quiet_mode);
+    driver_t *int_drivers[] = {&PS2_KEYBD_DRIVER, NULL};
 
     print_status("Loading drivers..", 1);
-    print_status("Starting driver ", 0);
-    print(PS2_KEYBD_DRIVER.name, 0);
-    print("..", 0);
-    PS2_KEYBD_DRIVER.init();
-
-    print("\nNow you can type here: ", 0x0A);
+    for (int i = 0; int_drivers[i]; i++) {
+        print_status("Starting driver ", 1);
+        print(int_drivers[i]->name, 0);
+        print("..", 0);
+        int result = int_drivers[i]->init();
+        if (result > 0) {
+            print_status("Failed", 3);
+        } else print_status("Success", 0);
+    }
+    
     while (1) {
         printchar(kbd_getchar(), 0);
     }

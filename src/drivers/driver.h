@@ -6,7 +6,12 @@
 typedef struct {
     const string name;
     const string version;
-    void (*init)();
+    int (*init)();
 } driver_t;
+typedef struct {
+    const string name;
+    const string version;
+    void (*init)();
+} void_driver_t;
 
 #endif

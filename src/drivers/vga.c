@@ -1,23 +1,26 @@
 #include "vga.h"
 #include "driver.h"
 #include "../kernel/libraries/hwreg.h"
+#include "../kernel/libraries/stdmem.h"
+#include "../kernel/libraries/math.h"
 
 extern const string hex_chars;
 
-driver_t VGA_DRIVER = {
-    .name = "VGA Standard TextType Driver",
-    .version = "0.5.1",
+void_driver_t VGA_DRIVER = {
+    .name = "VGA Standard Driver",
+    .version = "0.6",
     .init = vga_init,
 };
 
-buffer VGA_BUF = {
-    .base = (volatile uint16_t*) VGA_ADDR,
+buffer VGATXT_BUF = {
+    .base = (volatile uint16_t*) VGA_TEXT_ADDR,
     .size = VGA_WIDTH * VGA_HEIGHT,
 };
-virtbuffer VIRTUAL_VGA[VGA_WIDTH * VGA_HEIGHT];
-vbufdata VIRTUAL_VGA_DATA = {
-    .size = VGA_WIDTH * VGA_HEIGHT,
+buffer VGAPX_BUF = {
+    .base = (volatile uint16_t*) VGA_PX_ADDR,
+    .size = VGA_PX_WIDTH * VGA_PX_HEIGHT,
 };
+
 
 uint16_t cursor_x = 0;
 uint16_t cursor_y = 0;
@@ -28,33 +31,30 @@ static inline uint16_t vgaconvlin(uint16_t x, uint16_t y) {
     return y * VGA_WIDTH + x;
 }
 
-bool VIRTW  = true;
 bool CSTPOS = false;
-bool WBUF_VIRT_ONLY = false;
 uint16_t CSTX = 0;
 int32_t CSTY  = 0;
+size_t CSTPOS32 = 0;
 static void wbufvga(size_t idx, uint16_t c, uint16_t color) {
 
     if (color == 0) {
         color = PRINT_CLR;
     }
     if (CSTPOS) {
-        idx = CSTY * VGA_WIDTH + CSTX;
+        idx = vgaconvlin(CSTX, CSTY);
     }
 
-    if (idx < VGA_BUF.size && idx < VIRTUAL_VGA_DATA.size) {
-        if (!WBUF_VIRT_ONLY) VGA_BUF.base[idx] = color << 8 | (uint8_t) c;
-        if (VIRTW) {
-            VIRTUAL_VGA[idx].clr = color;
-            VIRTUAL_VGA[idx].c   = c;
-            VIRTUAL_VGA[idx].x   = idx % VGA_WIDTH;
-            VIRTUAL_VGA[idx].y   = idx / VGA_WIDTH;
-        }
+    if (idx < VGATXT_BUF.size) {
+        if (CSTPOS && c == '\n') {
+            CSTX = 0;
+            CSTY ++;
+            CSTPOS32 = vgaconvlin(CSTX, CSTY);
+        } else VGATXT_BUF.base[idx] = color << 8 | (uint8_t) c;
     }
 
 }
 // static uint16_t rbufvga(size_t idx) {
-//     if (idx < VGA_BUF.size) return VGA_BUF.base[idx]; else return 0;
+//     if (idx < VGATXT_BUF.size) return VGATXT_BUF.base[idx]; else return 0;
 // }
 
 
@@ -71,13 +71,13 @@ void configure_cursor(bool enabled) {
     outb(REG_CRTC_DATA, REG_CUR_ENABLE_B);
 }
 
-void kprint_int(int num, uint16_t color) {
+void printint(int num, uint16_t color) {
     if (quiet_mode) return;
 
     if (color == 0x00) {
         color = PRINT_CLR;
     }
-    char* buf = (char*) num;
+    string buf = (string) num;
 
     if (num == 0) {
         printchar('0', color);
@@ -107,9 +107,10 @@ static void backspace_cursor() {
     cursor_y --;
 
     uint16_t pos = vgaconvlin(cursor_x, cursor_y);
+    uint16_t end = VGA_WIDTH;
     size_t i     = 1;
 
-    while (i <= pos && (VIRTUAL_VGA[pos - i].c == '\0')) {
+    while (i < end && ((char) (VGATXT_BUF.base[pos - i] & 0xFF) == '\0' || (char) (VGATXT_BUF.base[pos - i] & 0xFF) == ' ')) {
         i++;
     }
     i--;
@@ -132,14 +133,6 @@ static void backspace_cursor() {
     }
 }
 
-static void update_virtvga() {
-    bool _copy = WBUF_VIRT_ONLY;
-    WBUF_VIRT_ONLY = true;
-    for (size_t i = 0; i < VGA_BUF.size; i++) {
-        wbufvga(i, (char) (VGA_BUF.base[i] & 0xFF), (VGA_BUF.base[i] >> 8) & 0xFF);
-    }
-    WBUF_VIRT_ONLY = _copy;
-}
 
 void update_cursor(uint16_t x, uint16_t y) {
     if (x >= VGA_WIDTH) x = VGA_WIDTH - 1;
@@ -164,38 +157,28 @@ void clear(uint16_t color) {
     }
 
     for (size_t i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
-        wbufvga(i, ' ', color);
+        wbufvga(i, '\0', color);
     }
 
     update_cursor(0, 0);
 }
 
-void scroll(int32_t scroll_len) {
+void scroll(int32_t scroll_len, uint16_t color) {
     if (scroll_len == 0) return;
-
-    bool _copy_virtw = VIRTW;
-    bool _copy_cst   = CSTPOS;
-    VIRTW  = false;
-    CSTPOS = true;
-
-    int32_t end    = VGA_HEIGHT + scroll_len;
-    uint16_t pos   = 0;
-    
-    while (CSTY < end) {
-        if (CSTX >= VGA_WIDTH) {
-            CSTX   = 0;
-            CSTY   ++;
-        }
-        if (CSTY > VGA_HEIGHT + 1) {
-            CSTY = 0;
-        }
-        pos = (CSTY + scroll_len) * VGA_WIDTH + CSTX;
-        wbufvga(0, VIRTUAL_VGA[pos].c, VIRTUAL_VGA[pos].clr);
-        CSTX ++;
+    if (color == 0) {
+        color = PRINT_CLR;
     }
-    update_virtvga();
-    VIRTW = _copy_virtw;
-    CSTPOS = _copy_cst;
+
+    int32_t shift = scroll_len * VGA_WIDTH;
+    size_t keep  = VGATXT_BUF.size - shift;
+
+    memmove(VGATXT_BUF.base, VGATXT_BUF.base + shift, keep * sizeof(VGATXT_BUF.size));
+
+    if (scroll_len < 0) {
+        for (int32_t i = abs(shift); i > 0; i--) {
+            wbufvga(i - 1, ' ', color);
+        }
+    }
 
 }
 
@@ -226,13 +209,13 @@ void printchar(char c, uint16_t color) {
         if (cursor_x > 0) {
             cursor_x --;
             pos = vgaconvlin(cursor_x, cursor_y);
-            wbufvga(pos, ' ', color);
+            wbufvga(pos, '\0', color);
         } else {
             backspace_cursor();
         }
     } else if (c == '\t') {
         for (uint8_t i = 0; i < 4; i++) {
-            wbufvga(pos + i, ' ', color);
+            wbufvga(pos + i, '\0', color);
             cursor_x ++;
         }
     } else if (c == '\1') {
@@ -268,9 +251,9 @@ void printchar(char c, uint16_t color) {
         }
     }
 
-    // if (cursor_y >= VGA_HEIGHT) {
-    //     scroll(1);
-    // }
+    if (cursor_y >= VGA_HEIGHT) {
+        scroll(1, 0);
+    }
 
     update_cursor(cursor_x, cursor_y);
 

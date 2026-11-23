@@ -10,6 +10,8 @@ driver_t PS2_KEYBD_DRIVER = {
     .init    = ps2_keyboard_init
 };
 
+static bool initialized = false;
+
 
 static dict_hex hex_to_char = {
     // Characters
@@ -32,7 +34,7 @@ static dict_hex hex_to_char = {
 };
 
 
-int get_dict_len(dict_hex dict) {
+static int get_dict_len(dict_hex dict) {
     int i = 1;
     while (dict[i].key) {
         i++;
@@ -58,6 +60,7 @@ bool SHIFT_PRESSED       = false;
 bool CAPS_LOCK           = false;
 bool OTHER_SHIFT_PRESSED = false;
 char kbd_getchar() {
+    if (!initialized) return '\0';
     while (1) {
         uint8_t status = inb(REG_KBD_STAT);
 
@@ -88,7 +91,7 @@ char kbd_getchar() {
                 }
                 continue;
             }
-
+            
             char c = get_char_from_dict(scancode, hex_to_char);
             //printhex(scancode, 0);
             if (c) {
@@ -102,9 +105,23 @@ char kbd_getchar() {
 }
 
 
-void ps2_keyboard_init() {
+int ps2_keyboard_init() {
+    if (initialized) return 0;
+
+    outb(REG_KBD_DATA, 0xF5);
+    outb(REG_KBD_DATA, 0xEE);
+    uint16_t keyboard = inb(REG_KBD_DATA);
+    if (keyboard == 0xFF || keyboard == 0x00) {
+        return 1;
+    }
+    
     SHIFT_PRESSED = 0;
     while (inb(REG_KBD_STAT) & 0x01) {
         inb(REG_KBD_DATA);
     }
+
+    outb(REG_KBD_DATA, 0xF4);
+
+    initialized = true;
+    return 0;
 }

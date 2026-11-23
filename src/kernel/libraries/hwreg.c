@@ -1,7 +1,7 @@
 #include "../../drivers/driver.h"
 #include "hwreg.h"
 
-driver_t HWREG_DRIVER = {
+void_driver_t HWREG_DRIVER = {
     .name    = "Hardware Register Map & Utilities Driver",
     .version = "0.1",
     .init    = hwreg_driver_init

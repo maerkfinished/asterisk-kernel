@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 #include "../kernel/libraries/string.h"
+#include "../drivers/driver.h"
+
+typedef struct {
+    driver_t driver;
+} drivers_t;
 
 
 void print_kernel_logo(int x, int y);

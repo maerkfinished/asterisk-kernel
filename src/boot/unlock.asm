@@ -23,6 +23,7 @@ disk_fail:
     mov si, read_error_msg
     call print_string
     jmp $
+reading_msg    db "Loading sectors..", 0
 read_error_msg db "Disk Read Error", 0
 
 _start:

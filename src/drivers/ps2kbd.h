@@ -13,6 +13,6 @@ typedef struct {
 
 char kbd_getchar();
 
-void ps2_keyboard_init();
+int ps2_keyboard_init();
 
 #endif
