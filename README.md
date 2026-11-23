@@ -1,6 +1,8 @@
 # asterisk-kernel
 
-The Asterisk kernel, boots using legacy boot (for now no UEFI support). This is a side project of mine that I made for tinkering with hardware. You can use the drivers I made for the kernel if you want to make your own kernel if it also complies with it being open-source and other things mentioned in the [GPL-3.0 Liscense](https://github.com/maerkfinished/asterisk-kernel?tab=GPL-3.0-1-ov-file).
+The Asterisk kernel, boots using legacy boot (for now no UEFI support). This is a side project of mine that I made for tinkering with hardware. You can use the drivers I made for the kernel if you want to make your own kernel if it also complies with it being open-source and other things mentioned in the [GPL-3.0 Liscense](https://github.com/maerkfinished/asterisk-kernel?tab=GPL-3.0-1-ov-file).  
+  
+Tested on **real hardware** on November 21 2026, everything was working (Boots on a modern PC **with CSM**)
 
 # Building from source
 
